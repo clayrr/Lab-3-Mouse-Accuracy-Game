@@ -1,0 +1,10 @@
+{
+	"compilerOptions": {
+		"outDir": "scripts",
+		"module": "ESNext",
+		"target": "ESNext",
+		"lib": ["DOM", "DOM.AsyncIterable", "DOM.Iterable", "ESNext", "ESNext.AsyncIterable"],
+		"rootDir": "."
+	},
+	"include": ["game.ts"]
+}

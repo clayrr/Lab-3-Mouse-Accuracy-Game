@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>mouse accuracy game</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@unocss/reset/tailwind.min.css">
+	<link rel="stylesheet" href='./styles/index.css'>
+	<script defer src='./scripts/game.js'></script>
+</head>
+
+<body class='un-cloak bg-gray-100 min-h-screen flex flex-col items-center justify-center'>
+	<div class="w-full max-w-2xl">
+		<div class="mb-4 p-4 bg-white rounded shadow-md">
+			<h1 class="text-2xl font-bold mb-2 text-center">mouse accurasy game</h1>
+
+			<div class="flex justify-between mb-4">
+				<div>
+					<label for="gameDuration" class="block text-sm font-medium text-gray-700">game duration
+						(seconds):</label>
+					<input id="gameDuration" type="number" value="30"
+						class="mt-1 block w-full border border-gray-300 rounded-md">
+				</div>
+
+				<div>
+					<label for="difficulty" class="block text-sm font-medium text-gray-700">difficulty:</label>
+					<select id="difficulty" class="mt-1 block w-full border border-gray-300 rounded-md">
+						<option value="easy">easy</option>
+						<option value="medium">medium</option>
+						<option value="hard">hard</option>
+					</select>
+				</div>
+
+				<div>
+					<label for="targetShape" class="block text-sm font-medium text-gray-700">Target Shape:</label>
+					<select id="targetShape" class="mt-1 block w-full border border-gray-300 rounded-md">
+						<option value="circle">Circle</option>
+						<option value="square">Square</option>
+					</select>
+				</div>
+
+				<div>
+					<label for="targetColor" class="block text-sm font-medium text-gray-700">target color:</label>
+					<input id="targetColor" type="color" value="#ff0000"
+						class="mt-1 block w-full border border-gray-300 rounded-md">
+				</div>
+			</div>
+
+			<div class="flex justify-center">
+				<button id="startGame" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+					start game
+				</button>
+			</div>
+		</div>
+
+		<div id="gameArea" class="relative w-full h-[600px] bg-gray-200 rounded-md shadow-md"></div>
+
+		<div id="scoreboard" class="mt-4 hidden p-4 bg-white rounded shadow-md">
+			<h2 class="text-xl font-bold text-center mb-4">scoreboard</h2>
+			<p id="totalTargets" class="text-lg">total targets: 0</p>
+			<p id="targetsClicked" class="text-lg">targets clicked: 0</p>
+			<p id="finalScore" class="text-lg">final score: 0</p>
+			<p id='missedTargets' class='text-lg'>missed targets: 0</p>
+		</div>
+	</div>
+
+	<audio id="endGameAudio" hidden>
+		<source src="./audio/yippee.mp3" type="audio/mpeg">
+		Your browser does not support the audio element.
+	</audio>
+
+
+	<script src="https://cdn.jsdelivr.net/npm/@unocss/runtime/attributify.global.js"></script>
+</body>
+
+</html>
