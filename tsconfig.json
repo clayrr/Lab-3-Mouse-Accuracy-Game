@@ -3,8 +3,19 @@
 		"outDir": "scripts",
 		"module": "ESNext",
 		"target": "ESNext",
-		"lib": ["DOM", "DOM.AsyncIterable", "DOM.Iterable", "ESNext", "ESNext.AsyncIterable"],
-		"rootDir": "."
+		"rootDir": ".",
+		"removeComments": true,
+		"strict": true,
+		"alwaysStrict": true,
+		"allowUnusedLabels": false,
+		"allowUnreachableCode": false,
+		"noFallthroughCasesInSwitch": true,
+		"isolatedModules": true,
+		"noImplicitAny": true,
+		"noImplicitOverride": true,
+		"noImplicitReturns": true,
+		"noImplicitThis": true,
+		"noPropertyAccessFromIndexSignature": true
 	},
 	"include": ["game.ts"]
 }

@@ -1,66 +1,112 @@
+/**
+ * represents an individual target in the game
+*/
 interface Target {
 	element: HTMLElement;
 	timeout: number;
 }
 
-type Difficulty = 'easy' | 'medium' | 'difficult';
-type Shape = 'circle' | 'square'
+/**
+ * represents possible difficulties
+ */
+enum Difficulty {
+	Easy = 2000, // 2 seconds between spawn times
+	Medium = 1000, // 1 second between spawn times
+	Hard = 500 // 0.5 seconds between spawn times
+}
+
+/**
+ * Represents possible shapes of the targets
+ */
+enum Shape {
+	Circle = 'circle',
+	Square = 'square',
+	Triangle = 'triangle',
+}
+
+type HTMLGenericValue = HTMLElement & { value: string };
 
 let gameTime: number = 30; // default time
-let difficulty: Difficulty = 'easy'; // default difficulty
-let targetShape: Shape = 'circle'; // Default target shape
-let targetColor: string = '#ff0000'; // Default target color
+let difficulty: Difficulty = Difficulty.Easy; // default difficulty
+let targetShape: Shape = Shape.Circle; // default target shape
+let targetColor: string = '#ff0000'; // default target color
 let totalTargets: number = 0;
 let targetsClicked: number = 0;
-let missedTargets: number = 0;
+let missedTargets: number = 1;
 let gameTimer: number | null = null;
 let targetInterval: number | null = null;
 
-const startButton = <HTMLButtonElement>document.getElementById('startGame');
-const gameArea = <HTMLDivElement>document.getElementById('gameArea');
-const scoreboard = <HTMLDivElement>document.getElementById('scoreboard');
-const totalTargetsDisplay = <HTMLParagraphElement>document.getElementById('totalTargets');
-const targetsClickedDisplay = <HTMLParagraphElement>document.getElementById('targetsClicked');
-const finalScoreDisplay = <HTMLParagraphElement>document.getElementById('finalScore');
-const missedTargetsDisplay = <HTMLParagraphElement>document.getElementById('missedTargets');
+const getElement = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T;
+const getValue = (id: string): string => getElement<HTMLGenericValue>(id).value
 
-startButton.addEventListener('click', startGame);
+const startButton: HTMLButtonElement = getElement('startGame');
+const gameArea: HTMLDivElement = getElement('gameArea');
+const scoreboard: HTMLDivElement = getElement('scoreboard');
+const totalTargetsDisplay: HTMLParagraphElement = getElement('totalTargets');
+const targetsClickedDisplay: HTMLParagraphElement = getElement('targetsClicked');
+const finalScoreDisplay: HTMLParagraphElement = getElement('finalScore');
+const missedTargetsDisplay: HTMLParagraphElement = getElement('missedTargets');
+const difficultySelect: HTMLSelectElement = getElement('targetDifficulty');
+const shapeSelect: HTMLSelectElement = getElement('targetShape');
 
+// dynamically populate the difficulty and shape dropdowns
+function populateSelectOptions() {
+	// populate difficulty options
+	Object.values(Difficulty).filter(v => typeof v === 'string').forEach(v => {
+		const option = document.createElement('option');
+		option.value = v.toString();
+		option.textContent = v.charAt(0).toUpperCase() + v.slice(1);
+		difficultySelect.appendChild(option);
+	});
+
+	// populate shape options
+	Object.values(Shape).filter(v => typeof v === 'string').forEach(v => {
+		const option = document.createElement('option');
+		option.value = v.toString();
+		option.textContent = v.charAt(0).toUpperCase() + v.slice(1);
+		shapeSelect.appendChild(option);
+	});
+}
+
+// initialize the game
 function startGame() {
 	resetGame();
 
-	gameTime = <number>parseInt((document.getElementById('gameDuration') as HTMLInputElement).value);
-	difficulty = <Difficulty>(document.getElementById('difficulty') as HTMLSelectElement).value;
-	targetShape = <Shape>(document.getElementById('targetShape') as HTMLSelectElement).value;
-	targetColor = <string>(document.getElementById('targetColor') as HTMLInputElement).value;
+	// retrieve the game settings from the input fields
+	gameTime = parseInt(getValue('targetDuration'));
+	difficulty = Difficulty[getValue('targetDifficulty') as any] as any;
+	targetShape = getValue('targetShape') as Shape;
+	targetColor = getValue('targetColor');
 
-	const targetSpawnTime = difficulty === 'easy' ? 2000 : difficulty === 'medium' ? 1000 : 500;
-	targetInterval = window.setInterval(spawnTarget, targetSpawnTime);
+	// set interval to spawn targets and set game timer
+	targetInterval = window.setInterval(spawnTarget, difficulty);
 	gameTimer = window.setTimeout(endGame, gameTime * 1000);
 }
 
+// end the game and show the score
 function endGame() {
-	clearInterval(targetInterval!);
-	clearTargets();
-
-	const endGameAudio = <HTMLAudioElement>document.getElementById('endGameAudio');
-	endGameAudio.play();
-
-	displayScore();
+	if (targetInterval)
+		clearInterval(targetInterval); // clean up target spawning interval
+	clearTargets(); // clean up remaining targets that haven't naturally despawned
+	getElement<HTMLAudioElement>('endGameAudio').play(); // play end game audio
+	displayScore(); // display the calculated scoreboard
 }
 
+// reset the game state
 function resetGame() {
-	totalTargets = 0;
-	targetsClicked = 0;
-	missedTargets = 0;
-	gameArea.innerHTML = '';
-	scoreboard.classList.add('hidden');
+	totalTargets = 0; // reset the targets spawned counter
+	targetsClicked = 0; // reset the targets clicked counter
+	missedTargets = 0; // reset the targets missed counter
+	clearTargets(); // clear the game area child targets
+	scoreboard.classList.add('hidden'); // hide the scoreboard
 }
 
+// clear all targets from the game area
 function clearTargets() {
-	gameArea.innerHTML = '';
+	gameArea.innerHTML = ''; // reset the game area children
 }
 
+// display the scoreboard with the final results
 function displayScore() {
 	totalTargetsDisplay.textContent = `total targets: ${totalTargets}`;
 	targetsClickedDisplay.textContent = `targets clicked: ${targetsClicked}`;
@@ -69,46 +115,82 @@ function displayScore() {
 	scoreboard.classList.remove('hidden');
 }
 
+// calculate the player's score
 function calculateScore() {
 	return targetsClicked === 0 ? 0 : Math.floor((targetsClicked / totalTargets) * 100);
 }
 
+// spawn a target in a random location in the game area
 function spawnTarget() {
 	totalTargets++;
 
+	// create a new target element
 	const target = document.createElement('div');
 	target.classList.add('absolute', 'target', 'transition-transform');
-	target.style.width = '20px';
-	target.style.height = '20px';
 	target.style.backgroundColor = targetColor;
 
-	if (targetShape === 'circle')
-		target.classList.add('rounded-full');
+	// set target shape
+	switch (targetShape) {
+		case Shape.Circle:
+			target.style.width = '20px';
+			target.style.height = '20px';
+			target.classList.add('rounded-full');
+			break;
+		case Shape.Square:
+			target.style.width = '20px';
+			target.style.height = '20px';
+			break;
+		case Shape.Triangle:
+			target.style.width = '0';
+			target.style.height = '0';
+			target.style.borderLeft = '10px solid transparent';
+			target.style.borderRight = '10px solid transparent';
+			target.style.borderBottom = `20px solid ${targetColor}`;
+			target.style.backgroundColor = 'transparent'
+			break;
+	}
 
+	// get a random position within the game area
 	const gameAreaRect = gameArea.getBoundingClientRect();
 	const x = Math.random() * (gameAreaRect.width - 50);
 	const y = Math.random() * (gameAreaRect.height - 50);
-	target.style.transform = `translate(${x}px, ${y}px)`;
+	target.style.transform = `translate(${x}px, ${y}px) scale(1)`;
 
-	target.addEventListener('click', () => {
+	const onclickTarget = () => {
 		targetsClicked++;
-		target.remove();
-	});
+		target.remove(); // Remove target when clicked
+	}
 
-	target.animate([
-		{ transform: `translate(${x}px, ${y}px) scale(1)` },
-		{ transform: `translate(${x}px, ${y}px) scale(4)` }
+	// add click event listener for when the user clicks the target
+	target.addEventListener('click', onclickTarget);
+
+	// animate the target to expand and shrink within 3 seconds (1500ms expand, 1500ms shrink)
+	const animation = target.animate([
+		{ transform: `translate(${x}px, ${y}px) scale(1)` }, // initial phase
+		{ transform: `translate(${x}px, ${y}px) scale(4)` }, // expanding phase
+		{ transform: `translate(${x}px, ${y}px) scale(1)` } // shrinking phase
 	], {
-		duration: 1500,
-		easing: 'ease-out'
+		duration: 3000, // total duration (3000ms: 1500ms for expanding, 1500ms for shrinking)
+		easing: 'ease-in-out', // smooth transition for both expanding and shrinking
+		fill: 'forwards', // keeps the target in its final state after the animation
 	});
 
-	gameArea.appendChild(target);
-
-	window.setTimeout(() => {
+	// handle when the animation finishes (i.e. target missed)
+	const onfinishTarget = () => {
 		if (document.body.contains(target)) {
 			missedTargets++;
-			target.remove();
+			target.remove(); // remove the missed target
 		}
-	}, 1500);
+	};
+
+	// remove the target if not clicked by the end of its lifecycle (3 seconds)
+	animation.addEventListener('finish', onfinishTarget);
+
+	// append the target to the game area
+	gameArea.appendChild(target);
 }
+
+// INITIALIZE GAME
+
+populateSelectOptions(); // populates the selection options based on the enums.
+startButton.addEventListener('click', startGame); // start the game when the start button is clicked
