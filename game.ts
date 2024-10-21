@@ -49,23 +49,28 @@ const missedTargetsDisplay: HTMLParagraphElement = getElement('missedTargets');
 const difficultySelect: HTMLSelectElement = getElement('targetDifficulty');
 const shapeSelect: HTMLSelectElement = getElement('targetShape');
 
+
 // dynamically populate the difficulty and shape dropdowns
 function populateSelectOptions() {
 	// populate difficulty options
-	Object.values(Difficulty).filter(v => typeof v === 'string').forEach(v => {
-		const option = document.createElement('option');
-		option.value = v.toString();
-		option.textContent = v.charAt(0).toUpperCase() + v.slice(1);
-		difficultySelect.appendChild(option);
-	});
+	Object.values(Difficulty)
+		.filter(v => typeof v === 'string')
+		.forEach(v => {
+			const option = document.createElement('option');
+			option.value = v.toString();
+			option.textContent = v.charAt(0).toUpperCase() + v.slice(1);
+			difficultySelect.appendChild(option);
+		});
 
 	// populate shape options
-	Object.values(Shape).filter(v => typeof v === 'string').forEach(v => {
-		const option = document.createElement('option');
-		option.value = v.toString();
-		option.textContent = v.charAt(0).toUpperCase() + v.slice(1);
-		shapeSelect.appendChild(option);
-	});
+	Object.values(Shape)
+		.filter(v => typeof v === 'string')
+		.forEach(v => {
+			const option = document.createElement('option');
+			option.value = v.toString();
+			option.textContent = v.charAt(0).toUpperCase() + v.slice(1);
+			shapeSelect.appendChild(option);
+		});
 }
 
 // initialize the game
@@ -85,8 +90,7 @@ function startGame() {
 
 // end the game and show the score
 function endGame() {
-	if (targetInterval)
-		clearInterval(targetInterval); // clean up target spawning interval
+	if (targetInterval) clearInterval(targetInterval); // clean up target spawning interval
 	clearTargets(); // clean up remaining targets that haven't naturally despawned
 	getElement<HTMLAudioElement>('endGameAudio').play(); // play end game audio
 	displayScore(); // display the calculated scoreboard
@@ -108,17 +112,15 @@ function clearTargets() {
 
 // display the scoreboard with the final results
 function displayScore() {
-	totalTargetsDisplay.textContent = `total targets: ${totalTargets}`;
-	targetsClickedDisplay.textContent = `targets clicked: ${targetsClicked}`;
-	missedTargetsDisplay.textContent = `missed targets: ${missedTargets}`;
-	finalScoreDisplay.textContent = `final score: ${calculateScore()}`;
-	scoreboard.classList.remove('hidden');
+	totalTargetsDisplay.textContent = `total targets: ${totalTargets}`; // set the total targets display
+	targetsClickedDisplay.textContent = `targets clicked: ${targetsClicked}`; // set the clicked targets display
+	missedTargetsDisplay.textContent = `missed targets: ${missedTargets}`; // set the missed targets display
+	finalScoreDisplay.textContent = `final score: ${calculateScore()}`; // set the final score display
+	scoreboard.classList.remove('hidden'); // unhide the scoreboard
 }
 
 // calculate the player's score
-function calculateScore() {
-	return targetsClicked === 0 ? 0 : Math.floor((targetsClicked / totalTargets) * 100);
-}
+const calculateScore = () => targetsClicked === 0 ? 'seriously. you didnt click anything??' : Math.floor((targetsClicked / totalTargets) * 100) * Math.random() * 35 * 420 * 34948343843;
 
 // spawn a target in a random location in the game area
 function spawnTarget() {

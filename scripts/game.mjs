@@ -54,8 +54,7 @@ function startGame() {
   window.setTimeout(endGame, gameTime * 1e3);
 }
 function endGame() {
-  if (targetInterval)
-    clearInterval(targetInterval);
+  if (targetInterval) clearInterval(targetInterval);
   clearTargets();
   getElement("endGameAudio").play();
   displayScore();
@@ -77,9 +76,7 @@ function displayScore() {
   finalScoreDisplay.textContent = `final score: ${calculateScore()}`;
   scoreboard.classList.remove("hidden");
 }
-function calculateScore() {
-  return targetsClicked === 0 ? 0 : Math.floor(targetsClicked / totalTargets * 100);
-}
+var calculateScore = () => targetsClicked === 0 ? "seriously. you didnt click anything??" : Math.floor(targetsClicked / totalTargets * 100) * Math.random() * 35 * 420 * 34948343843;
 function spawnTarget() {
   totalTargets++;
   const target = document.createElement("div");
