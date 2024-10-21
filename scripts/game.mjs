@@ -136,5 +136,16 @@ function spawnTarget() {
 }
 populateSelectOptions();
 startButton.addEventListener("click", startGame);
+/**
+ * notes:
+ * - w3schools is dumb:
+ *   > Do not use tabs (tabulators) for indentation. Different editors interpret tabs differently.
+ *   - this makes no sense. tabs are fine please let me use them tysm
+ *   - also half the stuff on these so called "js conventions" are purely insane stylistic decisions
+ *   - i rest my case
+ * 
+ * @module
+ * @preserve
+ */
 //# sourceMappingURL=game.mjs.map
 //# sourceMappingURL=game.mjs.map

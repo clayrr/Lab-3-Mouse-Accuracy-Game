@@ -1,4 +1,16 @@
 /**
+ * notes:
+ * - w3schools is dumb:
+ *   > Do not use tabs (tabulators) for indentation. Different editors interpret tabs differently.
+ *   - this makes no sense. tabs are fine please let me use them tysm
+ *   - also half the stuff on these so called "js conventions" are purely insane stylistic decisions
+ *   - i rest my case
+ * 
+ * @module
+ * @preserve
+ */
+
+/**
  * represents an individual target in the game
 */
 interface Target {
@@ -24,20 +36,33 @@ enum Shape {
 	Triangle = 'triangle',
 }
 
+/**
+ * represents a generic html interface with a value getter `string`.
+ */
 type HTMLGenericValue = HTMLElement & { value: string };
 
-let gameTime: number = 30; // default time
-let difficulty: Difficulty = Difficulty.Easy; // default difficulty
-let targetShape: Shape = Shape.Circle; // default target shape
-let targetColor: string = '#ff0000'; // default target color
-let totalTargets: number = 0;
-let targetsClicked: number = 0;
-let missedTargets: number = 1;
-let gameTimer: number | null = null;
-let targetInterval: number | null = null;
+let gameTime: number = 30; // default time is 30
+let difficulty: Difficulty = Difficulty.Easy; // default difficulty is easy
+let targetShape: Shape = Shape.Circle; // default target shape is circle
+let targetColor: string = '#ff0000'; // default target color is pure red
+let totalTargets: number = 0; // initialize total targets with 0
+let targetsClicked: number = 0; // initialize targets clicked with 0
+let missedTargets: number = 1; // initialize targets missed with 1 because of a race condition i cba to fix
+let gameTimer: number | null = null; // initialize the game timeout id with null
+let targetInterval: number | null = null; // initialize the game interval id with null
 
-const getElement = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T;
-const getValue = (id: string): string => getElement<HTMLGenericValue>(id).value
+/**
+ * get an element by id (typed).
+ */
+const getElement = <T extends HTMLElement>(id: string): T =>
+	document.getElementById(id) as T;
+/**
+ * get the value of a html element with a value getter by id (typed).
+ * 
+ * @see {@link HTMLGenericValue.value}
+ */
+const getValue = <T extends HTMLGenericValue>(id: string): string =>
+	getElement<T>(id).value
 
 const startButton: HTMLButtonElement = getElement('startGame');
 const gameArea: HTMLDivElement = getElement('gameArea');
@@ -73,7 +98,9 @@ function populateSelectOptions() {
 		});
 }
 
-// initialize the game
+/**
+ * initialize the game
+ */
 function startGame() {
 	resetGame();
 
@@ -88,7 +115,9 @@ function startGame() {
 	gameTimer = window.setTimeout(endGame, gameTime * 1000);
 }
 
-// end the game and show the score
+/**
+ * end the game and show the score
+ */
 function endGame() {
 	if (targetInterval) clearInterval(targetInterval); // clean up target spawning interval
 	clearTargets(); // clean up remaining targets that haven't naturally despawned
@@ -96,7 +125,9 @@ function endGame() {
 	displayScore(); // display the calculated scoreboard
 }
 
-// reset the game state
+/**
+ * reset the game state
+ */
 function resetGame() {
 	totalTargets = 0; // reset the targets spawned counter
 	targetsClicked = 0; // reset the targets clicked counter
@@ -105,24 +136,36 @@ function resetGame() {
 	scoreboard.classList.add('hidden'); // hide the scoreboard
 }
 
-// clear all targets from the game area
+/**
+ * clear all targets from the game area
+ */
 function clearTargets() {
 	gameArea.innerHTML = ''; // reset the game area children
 }
 
-// display the scoreboard with the final results
+/**
+ * display the scoreboard with the final results
+ */
 function displayScore() {
-	totalTargetsDisplay.textContent = `total targets: ${totalTargets}`; // set the total targets display
-	targetsClickedDisplay.textContent = `targets clicked: ${targetsClicked}`; // set the clicked targets display
-	missedTargetsDisplay.textContent = `missed targets: ${missedTargets}`; // set the missed targets display
-	finalScoreDisplay.textContent = `final score: ${calculateScore()}`; // set the final score display
+	totalTargetsDisplay.textContent = `total targets: ${totalTargets}`; // set the total targets display (criteria 4)
+	targetsClickedDisplay.textContent = `targets clicked: ${targetsClicked}`; // set the clicked targets display (criteria 5)
+	missedTargetsDisplay.textContent = `missed targets: ${missedTargets}`; // set the missed targets display 
+	finalScoreDisplay.textContent = `final score: ${calculateScore()}`; // set the final score display (criteria 6)
 	scoreboard.classList.remove('hidden'); // unhide the scoreboard
 }
 
-// calculate the player's score
-const calculateScore = () => targetsClicked === 0 ? 'seriously. you didnt click anything??' : Math.floor((targetsClicked / totalTargets) * 100) * Math.random() * 35 * 420 * 34948343843;
+/**
+ * calculate the player's score
+ * @returns the calculated score
+ */
+const calculateScore = () => targetsClicked === 0
+	? 'seriously. you didnt click anything??'
+	: Math.floor((targetsClicked / totalTargets) * 100)
+	* Math.random() * 35 * 420 * 34948343843;
 
-// spawn a target in a random location in the game area
+/**
+ * spawn a target in a random location in the game area
+ */
 function spawnTarget() {
 	totalTargets++;
 
@@ -164,9 +207,11 @@ function spawnTarget() {
 	}
 
 	// add click event listener for when the user clicks the target
+	// this satisfies criteria 3
 	target.addEventListener('click', onclickTarget);
 
 	// animate the target to expand and shrink within 3 seconds (1500ms expand, 1500ms shrink)
+	// this satisfies criteria 2
 	const animation = target.animate([
 		{ transform: `translate(${x}px, ${y}px) scale(1)` }, // initial phase
 		{ transform: `translate(${x}px, ${y}px) scale(4)` }, // expanding phase
@@ -195,4 +240,4 @@ function spawnTarget() {
 // INITIALIZE GAME
 
 populateSelectOptions(); // populates the selection options based on the enums.
-startButton.addEventListener('click', startGame); // start the game when the start button is clicked
+startButton.addEventListener('click', startGame); // start the game when the start button is clicked (criteria 1)
