@@ -1,20 +1,20 @@
-var gameTime = 30;
+var gameTime = 30;  
 var totalTargets = 0;
 var targetsClicked = 0;
 var missedTargets = 0; 
 var targetInterval = null; 
-var gameTiner = null; 
+var gameTimer = null;  
+var remainingTime = gameTime;  // Track remaining time
 
-//Start button 
-var startButton = document.getElementById("start");
+// Start button
+var startButton = document.getElementById("startGame");
 startButton.addEventListener('click', startGame); 
 
-
-function startGame(){
+function startGame() {
     resetGame();
-    targetInterval = setInterval(spawnTarget, 1000);
-    gameTimer = setTimeout(endGame, gameTime * 1000);
-
+    targetInterval = setInterval(spawnTarget, 1000);  // Spawn targets every second
+    gameTimer = setInterval(updateTimer, 1000);  // Update the timer every second
+    setTimeout(endGame, gameTime * 1000);  // End game after gameTime
 }
 
 function spawnTarget() {
@@ -22,60 +22,86 @@ function spawnTarget() {
 
     var target = document.createElement("div");
     target.classList.add("target");
-    //position of target - randomize it --- 
-
-    //target appears
+    
+    //*Randomize target position
+    var maxX = gameArea.offsetWidth - 50;  // Adjust for target width
+    var maxY = gameArea.offsetHeight - 50;  // Adjust for target height
+    var randomX = randomValue(0, maxX);
+    var randomY = randomValue(0, maxY);
+    
+    target.style.left = `${randomX}px`;
+    target.style.top = `${randomY}px`;
+    target.style.width = "50px";  // Set width of target
+    target.style.height = "50px";  // Set height of target
+    target.style.backgroundColor = "red";  // Color of the target
+    target.style.transition = "transform 0.5s";  // Transition for scale effect
+    
+    // Target appears
     document.body.appendChild(target);
 
-    //add time stuff for growing and shrink target
-    // Grow target
-    target.style.transform = "scale(1.5)"; 
-    //shrink 
-    target.style.transform = "scale(0.5)"; 
+    // Add time stuff for growing and shrinking target
+    target.style.transform = "scale(1.5)";  // Grow target
+    setTimeout(() => {
+        target.style.transform = "scale(0.5)";  // Shrink target after 500ms
+    }, 500); 
 
-    //when clicked- target disappears
+    // When clicked, target disappears
     target.addEventListener('click', () => {
         targetsClicked++;
-        document.body.removeChild(target); // Remove the target on click
+        document.body.removeChild(target);  // Remove the target on click
     });
 
-
+    // Remove the target if not clicked after a set time
+    setTimeout(() => {
+        if (document.body.contains(target)) {
+            missedTargets++;
+            document.body.removeChild(target);  // Remove target if missed
+        }
+    }, 1500);  // Adjust time for how long the target stays visible
 }
 
-function resetGame(){
+function resetGame() {
     totalTargets = 0;
     targetsClicked = 0;
     missedTargets = 0; 
     clearTargets(); 
 
-    //clear timer
+    remainingTime = gameTime;  // Reset the remaining time
+    document.getElementById("timerDisplay").textContent = `Time left: ${remainingTime}s`;  // Reset timer display
 }
 
-function endGame(){
+function updateTimer() {
+    remainingTime--;  // Decrease remaining time
+    document.getElementById("timerDisplay").textContent = `Time left: ${remainingTime}s`;  // Update timer display
+
+    if (remainingTime <= 0) {
+        clearInterval(gameTimer);  // Stop the timer when it reaches 0
+    }
+}
+
+function endGame() {
     clearTargets();
     displayScore(); 
-
     resetGame(); 
 }
 
 function clearTargets() {
-    gameArea.innerHTML = "";
+    gameArea.innerHTML = "";  // Clear all targets
 }
 
-function displayScore(){
-    totalTargetsDisplay.textContent = `total targets: ${totalTargets}`;
-    targetsClickedDisplay.textContent = `targets clicked: ${targetsClicked}`;
-    missedTargetsDisplay.textContent = `missed targets: ${missedTargets}`;
-    finalScoreDisplay.textContent = `final score: ${calculateScore()}`;
-    //score board appears bc hidden is removed
-    scoreboard.classList.remove("hidden");
+function displayScore() {
+    totalTargetsDisplay.textContent = `Total targets: ${totalTargets}`;
+    targetsClickedDisplay.textContent = `Targets clicked: ${targetsClicked}`;
+    missedTargetsDisplay.textContent = `Missed targets: ${missedTargets}`;
+    finalScoreDisplay.textContent = `Final score: ${calculateScore()}`;
+    scoreboard.classList.remove("hidden");  // Show scoreboard
 }
 
-var calculateScore = Math.floor(targetsClicked / totalTargets * 100); 
-
-//random stuff
-function randomValue(min, max){
-    return Math.random() * (max-min) + min; 
+function calculateScore() {
+    return Math.floor((targetsClicked / totalTargets) * 100) || 0;  // Avoid NaN
 }
 
-Math.floor(Math.random());
+// Random value function
+function randomValue(min, max) {
+    return Math.random() * (max - min) + min; 
+}
