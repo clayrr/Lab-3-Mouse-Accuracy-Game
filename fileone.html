@@ -3,34 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Mouse Accuracy Game</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@unocss/reset/tailwind.min.css">
-
 </head>
 
 <body>
-    <div id = 'gameContainer'>
+    <div id="gameContainer">
         <!-- Start Button -->
-        <button id="startGame">start</button>
+        <button id="startGame">Start</button>
+
+        <!-- Timer Display -->
+        <div id="timerDisplay" class="text-xl mt-4">Time left: 30s</div>
 
         <!-- Game Area -->
         <div id="gameArea" class="relative w-full h-[600px] bg-gray-200 rounded-md shadow-md"></div>
-    
-        <!-- score board -->
-        <div id="scoreboard" class="mt-4 hidden p-4 bg-white rounded shadow-md">
-			<h2 class="text-xl font-bold text-center mb-4">scoreboard</h2>
-			<p id="totalTargets" class="text-lg">total targets: 0</p>
-			<p id="targetsClicked" class="text-lg">targets clicked: 0</p>
-			<p id="finalScore" class="text-lg">final score: 0</p>
-			<p id='missedTargets' class='text-lg'>missed targets: 0</p>
-		</div>
 
-        <script src="https://cdn.jsdelivr.net/npm/@unocss/runtime/attributify.global.js">
-            
-        </script>
-    
+        <!-- Scoreboard -->
+        <div id="scoreboard" class="mt-4 hidden p-4 bg-white rounded shadow-md">
+            <h2 class="text-xl font-bold text-center mb-4">Scoreboard</h2>
+            <p id="totalTargets" class="text-lg">Total targets: 0</p>
+            <p id="targetsClicked" class="text-lg">Targets clicked: 0</p>
+            <p id="finalScore" class="text-lg">Final score: 0</p>
+            <p id='missedTargets' class="text-lg">Missed targets: 0</p>
+        </div>
+
+        <script src="game.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@unocss/runtime/attributify.global.js"></script>
     </div>
-    
-    
 </body>
 </html>
