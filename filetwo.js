@@ -4,6 +4,7 @@ var targetsClicked = 0;
 var missedTargets = 0; 
 var targetInterval = null; 
 var gameTimer = null;  
+var isGameRunning = false; // Track if the game is running
 var remainingTime = gameTime;  // Track remaining time
 
 // Start button
@@ -11,12 +12,13 @@ var startButton = document.getElementById("startGame");
 startButton.addEventListener('click', startGame); 
 
 function startGame() {
+    if (isGameRunning) return; // Prevent starting a new game
+    isGameRunning = true; // Set the game as running
     resetGame();
     targetInterval = setInterval(spawnTarget, 1000);  // Spawn targets every second
     gameTimer = setInterval(updateTimer, 1000);  // Update the timer every second
     setTimeout(endGame, gameTime * 1000);  // End game after gameTime
 }
-
 function spawnTarget() {
     totalTargets++;
 
@@ -82,7 +84,7 @@ function updateTimer() {
 function endGame() {
     clearTargets();
     displayScore(); 
-    resetGame(); 
+    isGameRunning = false; // Set the game as not running
 }
 
 function clearTargets() {
